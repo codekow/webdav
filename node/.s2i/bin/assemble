@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Before Assembling"
+echo "Creating ${WEBDAV_PATH}"
+mkdir -p ${WEBDAV_PATH}
+
+echo "Continue Assemble"
+/usr/libexec/s2i/assemble
+rc=$?
+
+if [ $rc -eq 0 ]; then
+    echo "After successful assembling"
+else
+    echo "After failed assembling"
+fi
+
+exit $rc
