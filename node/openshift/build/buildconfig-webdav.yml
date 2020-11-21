@@ -13,7 +13,7 @@ spec:
       runPolicy: Serial
   source:
     git:
-      ref: master
+      ref: main
       uri: 'https://github.com/happykow/webdav.git'
     contextDir: /node
     type: Git
