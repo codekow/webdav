@@ -1,0 +1,161 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: webdav-apache
+  annotations:
+    iconClass: icon-openshift
+    openshift.io/display-name: Apache Webdav Template - with Docker build
+    description: A template to build the apache webdav image and deploy in your namespace. This can be used to easily interface with a persistent volume.
+message: |
+  You can setup the following environment varibles to customize your deployment:
+  WEBDAV_USER: ${WEBDAV_USER}
+  WEBDAV_PASS: ${WEBDAV_PASS}
+  
+parameters:
+- description: The name for the application.
+  displayName: Application Name
+  name: APPLICATION_NAME
+  required: true
+  value: apache-webdav
+- description: The username for access
+  displayName: WebDAV Username
+  name: WEBDAV_USER
+  value: user
+- description: The username for access
+  displayName: WebDAV Password
+  name: WEBDAV_PASS
+  from: '[A-Za-z0-9]{14}'
+  generate: expression
+  required: true
+- description: The GIT URL
+  displayName: GIT Repo URL
+  name: GIT_URL
+  value: https://github.com/happykow/webdav.git
+- description: The GIT URL
+  displayName: GIT Context Dir
+  name: GIT_CONTEXT_DIR
+  value: /apache
+- description: The tag to deploy.
+  displayName: Deploy Tag Name
+  name: TAG_NAME
+  required: true
+  value: latest
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+      spec:
+        containers:
+        - env:
+          - name: WEBDAV_USER
+            value: ${WEBDAV_USER}
+          - name: WEBDAV_PASS
+            value: ${WEBDAV_PASS}
+          image: ${APPLICATION_NAME}:${TAG_NAME}
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8080
+            timeoutSeconds: 1
+          name: ${APPLICATION_NAME}
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${APPLICATION_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:${TAG_NAME}
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: ${GIT_CONTEXT_DIR}
+      git:
+        uri: ${GIT_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        env:
+        - name: GIT_SSL_NO_VERIFY
+          value: "true"
+      type: Docker
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: "${APPLICATION_NAME}"
+    labels:
+      app: "${APPLICATION_NAME}"
+  spec:
+    host: ''
+    to:
+      kind: Service
+      name: "${APPLICATION_NAME}"
+      weight: 100
+    port:
+      targetPort: 8080-tcp
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect

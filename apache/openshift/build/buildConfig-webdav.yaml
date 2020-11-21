@@ -1,0 +1,24 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  labels:
+    build: webdav-apache
+  name: webdav-apache
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'webdav-apache:latest'
+      runPolicy: Serial
+  source:
+    git:
+      ref: master
+      uri: 'https://github.com/happykow/webdav.git'
+    contextDir: /apache
+    type: Git
+  strategy:
+    dockerStrategy:
+    type: Docker
+  triggers:
+    - type: ImageChange
+    - type: ConfigChange

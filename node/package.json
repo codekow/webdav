@@ -1,0 +1,15 @@
+{
+  "name": "webdav",
+  "version": "1.0.0",
+  "description": "webdav server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node webdav.js"
+  },
+  "author": "Cory G. Latschkowski <dev@localhost>",
+  "license": "MIT",
+  "dependencies": {
+    "webdav-server": "^2.6.2"
+  }
+}
