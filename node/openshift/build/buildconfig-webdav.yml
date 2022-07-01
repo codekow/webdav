@@ -21,7 +21,7 @@ spec:
     sourceStrategy:
       from:
         kind: ImageStreamTag
-        name: 'nodejs:10'
+        name: 'nodejs:latest'
         namespace: openshift
     type: Source
   triggers:
