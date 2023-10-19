@@ -7,7 +7,7 @@ metadata:
     openshift.io/display-name: Apache Webdav Template - with Docker build
     description: A template to build the apache webdav image and deploy in your namespace. This can be used to easily interface with a persistent volume.
 message: |
-  You can setup the following environment varibles to customize your deployment:
+  You can setup the following environment variables to customize your deployment:
   WEBDAV_USER: ${WEBDAV_USER}
   WEBDAV_PASS: ${WEBDAV_PASS}
   
@@ -30,7 +30,7 @@ parameters:
 - description: The GIT URL
   displayName: GIT Repo URL
   name: GIT_URL
-  value: https://github.com/happykow/webdav.git
+  value: https://github.com/codekow/webdav.git
 - description: The GIT URL
   displayName: GIT Context Dir
   name: GIT_CONTEXT_DIR

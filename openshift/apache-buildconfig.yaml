@@ -1,3 +1,14 @@
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  labels:
+    build: webdav-apache
+  name: webdav-apache
+spec:
+  lookupPolicy:
+    local: true
+---
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
@@ -13,8 +24,8 @@ spec:
   source:
     git:
       ref: master
-      uri: 'https://github.com/happykow/webdav.git'
-    contextDir: /apache
+      uri: 'https://github.com/codekow/webdav.git'
+    contextDir: /containers/apache
     type: Git
   strategy:
     dockerStrategy:

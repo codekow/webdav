@@ -4,10 +4,17 @@ apiVersion: template.openshift.io/v1
 metadata:
   name: webdav-server-existing-pvc
   annotations:
-    openshift.io/display-name: Webdav Server with existing PVC
-    description: Template for deploying a Webdav Server to allow you to map a PVC to your Windows machine as a drive.  This template maps to an existing pvc.
+    openshift.io/display-name: WebDav Server with existing PVC
+    description: |
+      Template for deploying a Webdav Server to allow you to map a PVC to your local machine.
+      This template maps to an existing PVC.
     iconClass: icon-node
     tags: node,drive,pvc,mapping
+message: |
+  You can setup the following environment variables to customize your deployment:
+  WEBDAV_USER: ${WEBDAV_USER}
+  WEBDAV_PASS: ${WEBDAV_PASS}
+
 parameters:
 - name: APPLICATION_NAME
   required: true
@@ -151,7 +158,7 @@ objects:
     source:
       git:
         ref: master
-        uri: 'https://github.com/happykow/webdav.git'
+        uri: 'https://github.com/codekow/webdav.git'
       contextDir: /node
       type: Git
     strategy:

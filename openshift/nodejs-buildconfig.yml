@@ -1,4 +1,14 @@
 ---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  labels:
+    build: webdav-node
+  name: webdav-node
+spec:
+  lookupPolicy:
+    local: true
+---
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
@@ -14,8 +24,8 @@ spec:
   source:
     git:
       ref: main
-      uri: 'https://github.com/happykow/webdav.git'
-    contextDir: /node
+      uri: 'https://github.com/codekow/webdav.git'
+    contextDir: /containers/node
     type: Git
   strategy:
     sourceStrategy:
